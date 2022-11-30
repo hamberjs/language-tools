@@ -1,0 +1,4 @@
+/dist
+/node_modules
+/syntaxes/hamber.tmLanguage.json
+/syntaxes/postcss.json

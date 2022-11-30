@@ -1,0 +1,37 @@
+{
+    "HamberKit Endpoint": {
+        "prefix": "kitEndpoint",
+        "description": "HamberKit Endpoint",
+        "body": [
+            "export const ${1|GET,POST,PUT,PATCH,DELETE|}: RequestHandler = async ($2) => {",
+            "\t$3",
+            "\treturn new Response();",
+            "};"
+        ]
+    },
+    "HamberKit Actions": {
+        "prefix": "kitActions",
+        "description": "HamberKit Actions",
+        "body": ["export const actions: Actions = {", "\t$1", "};"]
+    },
+    "HamberKit Load": {
+        "prefix": "kitLoad",
+        "description": "HamberKit Load",
+        "body": [
+            "export const load: ${1|PageLoad,PageServerLoad,LayoutLoad,LayoutServerLoad|} = async ($2) => {",
+            "\t$3",
+            "};"
+        ]
+    },
+    "HamberKit Param Matcher": {
+        "prefix": "kitParamMatcher",
+        "description": "HamberKit Param Matcher",
+        "body": [
+            "import type { ParamMatcher } from '@hamberjs/kit';",
+            "",
+            "export const match: ParamMatcher = (param) => {",
+            "\treturn $1;",
+            "};"
+        ]
+    }
+}

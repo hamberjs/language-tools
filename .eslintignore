@@ -1,0 +1,7 @@
+**/dist/*
+node_modules
+packages/hamber2tsx/test/**/*
+packages/hamber2tsx/index.*
+declare module '*.hamber'
+packages/hamber2tsx/hamber-shims.d.ts
+packages/hamber2tsx/hamber-jsx.d.ts

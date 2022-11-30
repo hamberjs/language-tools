@@ -1,0 +1,31 @@
+{
+    "name": "@hamberjs/language-tools",
+    "version": "1.0.0",
+    "author": "NKDuy",
+    "license": "MIT",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "bootstrap": "yarn workspace hamber2tsx build && yarn workspace hamber-vscode build:grammar",
+        "build": "tsc -b",
+        "watch": "tsc -b -watch",
+        "format": "prettier --write .",
+        "lint": "prettier --check . && eslint \"packages/**/*.{ts,js}\""
+    },
+    "dependencies": {
+        "typescript": "^4.8.2"
+    },
+    "devDependencies": {
+        "@hamberjs/eslint-config": "github:hamberjs/eslint-config#v5.8.0",
+        "@typescript-eslint/eslint-plugin": "^4.3.0",
+        "@typescript-eslint/parser": "^4.3.0",
+        "eslint": "^7.7.0",
+        "eslint-plugin-hamber3": "^2.7.3",
+        "eslint-plugin-import": "^2.22.1",
+        "prettier": "2.3.2",
+        "cross-env": "^7.0.2",
+        "ts-node": "^10.0.0"
+    }
+}

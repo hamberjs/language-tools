@@ -1,0 +1,724 @@
+{
+    "name": "hamber-vscode",
+    "version": "106.2.0",
+    "description": "Hamber language support for VS Code",
+    "main": "dist/src/extension.js",
+    "scripts": {
+        "build:grammar": "npx js-yaml syntaxes/hamber.tmLanguage.src.yaml > syntaxes/hamber.tmLanguage.json && npx js-yaml syntaxes/postcss.src.yaml > syntaxes/postcss.json",
+        "build:ts": "tsc -p ./",
+        "build": "npm run build:ts && npm run build:grammar",
+        "vscode:prepublish": "npm run build && npm prune --production",
+        "watch": "npm run build:grammar && tsc -w -p ./"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hamberjs/language-tools.git"
+    },
+    "keywords": [
+        "hamber",
+        "vscode"
+    ],
+    "author": "NKDuy",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/hamberjs/language-tools/issues"
+    },
+    "homepage": "https://github.com/hamberjs/language-tools#readme",
+    "displayName": "Hamber for VS Code",
+    "publisher": "hamberjs",
+    "icon": "icons/logo.png",
+    "galleryBanner": {
+        "color": "#FF3E00",
+        "theme": "dark"
+    },
+    "categories": [
+        "Programming Languages",
+        "Formatters"
+    ],
+    "engines": {
+        "vscode": "^1.52.0"
+    },
+    "activationEvents": [
+        "onLanguage:hamber",
+        "onCommand:hamber.restartLanguageServer",
+        "onLanguage:javascript",
+        "onLanguage:typescript"
+    ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": "limited",
+            "description": "The extension requires workspace trust because it executes code specified by the workspace. Loading the user's node_modules and loading hamber config files is disabled when untrusted"
+        }
+    },
+    "contributes": {
+        "typescriptServerPlugins": [
+            {
+                "name": "typescript-hamber-plugin",
+                "enableForWorkspaceTypeScriptVersions": true
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Hamber",
+            "properties": {
+                "hamber.enable-ts-plugin": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Enable TypeScript Hamber plugin",
+                    "description": "Enables a TypeScript plugin which provides intellisense for Hamber files inside TS/JS files."
+                },
+                "hamber.ask-to-enable-ts-plugin": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Ask to enable TypeScript Hamber plugin",
+                    "description": "Ask on startup to enable the TypeScript plugin."
+                },
+                "hamber.language-server.runtime": {
+                    "scope": "application",
+                    "type": "string",
+                    "title": "Language Server Runtime",
+                    "description": "- You normally don't need this - Path to the node executable to use to spawn the language server. This is useful when you depend on native modules such as node-sass as without this they will run in the context of vscode, meaning node version mismatch is likely. Minimum required node version is 12.17. This setting can only be changed in user settings for security reasons."
+                },
+                "hamber.language-server.ls-path": {
+                    "scope": "application",
+                    "type": "string",
+                    "title": "Language Server Path",
+                    "description": "- You normally don't set this - Path to the language server executable. If you installed the \"hamber-language-server\" npm package, it's within there at \"bin/server.js\". Path can be either relative to your workspace root or absolute. Set this only if you want to use a custom version of the language server. This will then also use the workspace version of TypeScript. This setting can only be changed in user settings for security reasons."
+                },
+                "hamber.language-server.port": {
+                    "type": "number",
+                    "title": "Language Server Port",
+                    "description": "- You normally don't set this - At which port to spawn the language server. Can be used for attaching to the process for debugging / profiling. If you experience crashes due to \"port already in use\", try setting the port. -1 = default port is used.",
+                    "default": -1
+                },
+                "hamber.language-server.debug": {
+                    "type": "boolean",
+                    "title": "Language Server Debug Mode",
+                    "description": "- You normally don't set this - Enable more verbose logging for the language server useful for debugging language server execution."
+                },
+                "hamber.trace.server": {
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "default": "off",
+                    "description": "Traces the communication between VS Code and the Hamber Language Server."
+                },
+                "hamber.plugin.typescript.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript",
+                    "description": "Enable the TypeScript plugin"
+                },
+                "hamber.plugin.typescript.diagnostics.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Diagnostics",
+                    "description": "Enable diagnostic messages for TypeScript"
+                },
+                "hamber.plugin.typescript.hover.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Hover Info",
+                    "description": "Enable hover info for TypeScript"
+                },
+                "hamber.plugin.typescript.documentSymbols.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Symbols in Outline",
+                    "description": "Enable document symbols for TypeScript"
+                },
+                "hamber.plugin.typescript.completions.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Completions",
+                    "description": "Enable completions for TypeScript"
+                },
+                "hamber.plugin.typescript.codeActions.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Code Actions",
+                    "description": "Enable code actions for TypeScript"
+                },
+                "hamber.plugin.typescript.selectionRange.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Selection Range",
+                    "description": "Enable selection range for TypeScript"
+                },
+                "hamber.plugin.typescript.signatureHelp.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Signature Help",
+                    "description": "Enable signature help (parameter hints) for TypeScript"
+                },
+                "hamber.plugin.typescript.semanticTokens.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "TypeScript: Semantic Tokens",
+                    "description": "Enable semantic tokens (semantic highlight) for TypeScript."
+                },
+                "hamber.plugin.css.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS",
+                    "description": "Enable the CSS plugin"
+                },
+                "hamber.plugin.css.globals": {
+                    "type": "string",
+                    "default": "",
+                    "title": "CSS: Global Files",
+                    "description": "Which css files should be checked for global variables (`--global-var: value;`). These variables are added to the css completions. String of comma-separated file paths or globs relative to workspace root."
+                },
+                "hamber.plugin.css.diagnostics.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Diagnostics",
+                    "description": "Enable diagnostic messages for CSS"
+                },
+                "hamber.plugin.css.hover.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Hover Info",
+                    "description": "Enable hover info for CSS"
+                },
+                "hamber.plugin.css.completions.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Auto Complete",
+                    "description": "Enable auto completions for CSS"
+                },
+                "hamber.plugin.css.completions.emmet": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Include Emmet Completions",
+                    "description": "Enable emmet auto completions for CSS"
+                },
+                "hamber.plugin.css.documentColors.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Document Colors",
+                    "description": "Enable document colors for CSS"
+                },
+                "hamber.plugin.css.colorPresentations.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Color Picker",
+                    "description": "Enable color picker for CSS"
+                },
+                "hamber.plugin.css.documentSymbols.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: Symbols in Outline",
+                    "description": "Enable document symbols for CSS"
+                },
+                "hamber.plugin.css.selectionRange.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "CSS: SelectionRange",
+                    "description": "Enable selection range for CSS"
+                },
+                "hamber.plugin.html.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML",
+                    "description": "Enable the HTML plugin"
+                },
+                "hamber.plugin.html.hover.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML: Hover Info",
+                    "description": "Enable hover info for HTML"
+                },
+                "hamber.plugin.html.completions.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML: Auto Complete",
+                    "description": "Enable auto completions for HTML"
+                },
+                "hamber.plugin.html.completions.emmet": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML: Include Emmet Completions",
+                    "description": "Enable emmet auto completions for HTML"
+                },
+                "hamber.plugin.html.tagComplete.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML: Tag Auto Closing",
+                    "description": "Enable HTML tag auto closing"
+                },
+                "hamber.plugin.html.documentSymbols.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML: Symbols in Outline",
+                    "description": "Enable document symbols for HTML"
+                },
+                "hamber.plugin.html.linkedEditing.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "HTML: Linked Editing",
+                    "description": "Enable Linked Editing for HTML"
+                },
+                "hamber.plugin.hamber.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber",
+                    "description": "Enable the Hamber plugin"
+                },
+                "hamber.plugin.hamber.useNewTransformation": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Use a new transformation for intellisense",
+                    "description": "Hamber files need to be transformed to something that TypeScript understands for intellisense. Version 2.0 of this transformation can be enabled with this setting. It will be the default, soon."
+                },
+                "hamber.plugin.hamber.note-new-transformation": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Show a note about the new transformation",
+                    "description": "There's a new transformation for improved intellisense which is now turned on by default. This note notifies you about it."
+                },
+                "hamber.plugin.hamber.diagnostics.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Diagnostics",
+                    "description": "Enable diagnostic messages for Hamber"
+                },
+                "hamber.plugin.hamber.compilerWarnings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                            "ignore",
+                            "error"
+                        ]
+                    },
+                    "default": {},
+                    "title": "Hamber: Compiler Warnings Settings",
+                    "description": "Hamber compiler warning codes to ignore or to treat as errors. Example: { 'css-unused-selector': 'ignore', 'unused-export-let': 'error'}"
+                },
+                "hamber.plugin.hamber.format.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Format",
+                    "description": "Enable formatting for Hamber (includes css & js). You can set some formatting options through this extension. They will be ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.hamberSortOrder": {
+                    "type": "string",
+                    "default": "options-scripts-markup-styles",
+                    "title": "Hamber Format: Sort Order",
+                    "description": "Format: join the keys `options`, `scripts`, `markup`, `styles` with a - in the order you want. This option is ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.hamberStrictMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Hamber Format: Strict Mode",
+                    "description": "More strict HTML syntax. This option is ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.hamberAllowShorthand": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber Format: Allow Shorthand",
+                    "description": "Option to enable/disable component attribute shorthand if attribute name and expression are the same. This option is ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.hamberBracketNewLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber Format: Bracket New Line",
+                    "description": "Put the `>` of a multiline element on a new line. This option is ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.hamberIndentScriptAndStyle": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber Format: Indent Script And Style",
+                    "description": "Whether or not to indent code inside `<script>` and `<style>` tags. This option is ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.printWidth": {
+                    "type": "number",
+                    "default": 80,
+                    "title": "Hamber Format: Print Width",
+                    "description": "Maximum line width after which code is tried to be broken up. This is a Prettier core option. If you have the Prettier extension installed, this option is ignored and the corresponding option of that extension is used instead. This option is also ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.format.config.singleQuote": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Hamber Format: Quotes",
+                    "description": "Use single quotes instead of double quotes, where possible. This is a Prettier core option. If you have the Prettier extension installed, this option is ignored and the corresponding option of that extension is used instead. This option is also ignored if there's any kind of configuration file, for example a `.prettierrc` file."
+                },
+                "hamber.plugin.hamber.completions.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Completions",
+                    "description": "Enable auto completions for Hamber"
+                },
+                "hamber.plugin.hamber.hover.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Hover",
+                    "description": "Enable hover information for Hamber"
+                },
+                "hamber.plugin.hamber.codeActions.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Code Actions",
+                    "description": "Enable Code Actions for Hamber"
+                },
+                "hamber.plugin.hamber.selectionRange.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Selection Range",
+                    "description": "Enable selection range for Hamber"
+                },
+                "hamber.plugin.hamber.rename.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Hamber: Rename",
+                    "description": "Enable rename/move Hamber files functionality"
+                },
+                "hamber.plugin.hamber.defaultScriptLanguage": {
+                    "type": "string",
+                    "default": "none",
+                    "title": "Hamber: Default Script Language",
+                    "description": "The default language to use when generating new script tags",
+                    "enum": [
+                        "none",
+                        "ts"
+                    ]
+                }
+            }
+        },
+        "languages": [
+            {
+                "id": "hamber",
+                "aliases": [
+                    "Hamber",
+                    "hamber"
+                ],
+                "extensions": [
+                    ".hamber"
+                ],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "json",
+                "filenames": [
+                    ".prettierrc"
+                ]
+            }
+        ],
+        "jsonValidation": [
+            {
+                "fileMatch": ".prettierrc",
+                "url": "./prettier-options-schema.json"
+            },
+            {
+                "fileMatch": ".prettierrc.json",
+                "url": "./prettier-options-schema.json"
+            },
+            {
+                "fileMatch": "package.json",
+                "url": "./package-json-schema.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "hamber",
+                "scopeName": "source.hamber",
+                "path": "./syntaxes/hamber.tmLanguage.json",
+                "embeddedLanguages": {
+                    "text.html.basic": "html",
+                    "text.html.markdown": "markdown",
+                    "text.pug": "jade",
+                    "source.css": "css",
+                    "source.css.less": "less",
+                    "source.css.scss": "scss",
+                    "source.css.postcss": "postcss",
+                    "source.sass": "sass",
+                    "source.stylus": "stylus",
+                    "source.js": "javascript",
+                    "source.ts": "typescript",
+                    "source.coffee": "coffeescript"
+                },
+                "unbalancedBracketScopes": [
+                    "keyword.operator.relational",
+                    "storage.type.function.arrow",
+                    "keyword.operator.bitwise.shift",
+                    "meta.brace.angle",
+                    "punctuation.definition.tag"
+                ]
+            },
+            {
+                "scopeName": "hamber.pug",
+                "path": "./syntaxes/pug-hamber.json",
+                "injectTo": [
+                    "source.hamber"
+                ],
+                "embeddedLanguages": {
+                    "source.ts": "typescript",
+                    "text.pug": "jade"
+                }
+            },
+            {
+                "scopeName": "hamber.pug.tags",
+                "path": "./syntaxes/pug-hamber-tags.json",
+                "injectTo": [
+                    "source.hamber"
+                ],
+                "embeddedLanguages": {
+                    "source.ts": "typescript",
+                    "text.pug": "jade"
+                }
+            },
+            {
+                "scopeName": "hamber.pug.dotblock",
+                "path": "./syntaxes/pug-hamber-dotblock.json",
+                "injectTo": [
+                    "source.hamber"
+                ],
+                "embeddedLanguages": {
+                    "source.ts": "typescript"
+                }
+            },
+            {
+                "scopeName": "markdown.hamber.codeblock",
+                "path": "./syntaxes/markdown-hamber.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.block.hamber": "hamber"
+                }
+            },
+            {
+                "scopeName": "markdown.hamber.codeblock.script",
+                "path": "./syntaxes/markdown-hamber-js.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
+            },
+            {
+                "scopeName": "markdown.hamber.codeblock.style",
+                "path": "./syntaxes/markdown-hamber-css.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ]
+            },
+            {
+                "scopeName": "source.css.postcss",
+                "path": "./syntaxes/postcss.json",
+                "injectTo": [
+                    "source.hamber"
+                ]
+            }
+        ],
+        "commands": [
+            {
+                "command": "hamber.restartLanguageServer",
+                "title": "Hamber: Restart Language Server"
+            },
+            {
+                "command": "hamber.showCompiledCodeToSide",
+                "title": "Hamber: Show Compiled Code",
+                "icon": {
+                    "light": "icons/preview-right-light.svg",
+                    "dark": "icons/preview-right-dark.svg"
+                }
+            },
+            {
+                "command": "hamber.extractComponent",
+                "title": "Hamber: Extract Component"
+            },
+            {
+                "command": "hamber.typescript.findAllFileReferences",
+                "title": "Hamber: Find File References"
+            },
+            {
+                "command": "hamber.typescript.findComponentReferences",
+                "title": "Hamber: Find Component References"
+            },
+            {
+                "command": "hamber.kit.generateMultipleFiles",
+                "title": "HamberKit: Create route"
+            },
+            {
+                "command": "hamber.kit.generatePage",
+                "title": "HamberKit: Create +page.hamber"
+            },
+            {
+                "command": "hamber.kit.generatePageLoad",
+                "title": "HamberKit: Create +page.js/ts"
+            },
+            {
+                "command": "hamber.kit.generatePageServerLoad",
+                "title": "HamberKit: Create +page.server.js/ts"
+            },
+            {
+                "command": "hamber.kit.generateLayout",
+                "title": "HamberKit: Create +layout.hamber"
+            },
+            {
+                "command": "hamber.kit.generateLayoutLoad",
+                "title": "HamberKit: Create +layout.js/ts"
+            },
+            {
+                "command": "hamber.kit.generateLayoutServerLoad",
+                "title": "HamberKit: Create +layout.server.js/ts"
+            },
+            {
+                "command": "hamber.kit.generateServer",
+                "title": "HamberKit: Create +server.js/ts"
+            },
+            {
+                "command": "hamber.kit.generateError",
+                "title": "HamberKit: Create +error.hamber"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "hamber.showCompiledCodeToSide",
+                    "when": "editorLangId == hamber"
+                },
+                {
+                    "command": "hamber.typescript.findAllFileReferences",
+                    "when": "editorLangId == hamber && resourceScheme == file"
+                },
+                {
+                    "command": "hamber.typescript.findComponentReferences",
+                    "when": "editorLangId == hamber && resourceScheme == file"
+                }
+            ],
+            "editor/title": [
+                {
+                    "command": "hamber.showCompiledCodeToSide",
+                    "when": "editorLangId == hamber",
+                    "group": "navigation"
+                }
+            ],
+            "editor/title/context": [
+                {
+                    "command": "hamber.typescript.findAllFileReferences",
+                    "when": "resourceLangId == hamber && resourceScheme == file"
+                },
+                {
+                    "command": "hamber.typescript.findComponentReferences",
+                    "when": "resourceLangId == hamber && resourceScheme == file"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "hamber.extractComponent",
+                    "when": "editorLangId == hamber",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "hamber.typescript.findAllFileReferences",
+                    "when": "editorLangId == hamber",
+                    "group": "4_search"
+                },
+                {
+                    "command": "hamber.typescript.findComponentReferences",
+                    "when": "editorLangId == hamber",
+                    "group": "4_search"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "command": "hamber.typescript.findAllFileReferences",
+                    "when": "resourceLangId == hamber",
+                    "group": "4_search"
+                },
+                {
+                    "command": "hamber.typescript.findComponentReferences",
+                    "when": "resourceLangId == hamber",
+                    "group": "4_search"
+                },
+                {
+                    "when": "explorerResourceIsFolder",
+                    "submenu": "hamberkit2files",
+                    "group": "1_HamberKit2files"
+                }
+            ],
+            "hamberkit2files": [
+                {
+                    "command": "hamber.kit.generateMultipleFiles",
+                    "group": "0_HamberKit_Multiple"
+                },
+                {
+                    "command": "hamber.kit.generatePage",
+                    "group": "1_HamberKit_Page"
+                },
+                {
+                    "command": "hamber.kit.generatePageLoad",
+                    "group": "1_HamberKit_Page"
+                },
+                {
+                    "command": "hamber.kit.generatePageServerLoad",
+                    "group": "1_HamberKit_Page"
+                },
+                {
+                    "command": "hamber.kit.generateLayout",
+                    "group": "3_HamberKit_Layout"
+                },
+                {
+                    "command": "hamber.kit.generateLayoutLoad",
+                    "group": "3_HamberKit_Layout"
+                },
+                {
+                    "command": "hamber.kit.generateLayoutServerLoad",
+                    "group": "3_HamberKit_Layout"
+                },
+                {
+                    "command": "hamber.kit.generateServer",
+                    "group": "2_HamberKit_Server"
+                },
+                {
+                    "command": "hamber.kit.generateError",
+                    "group": "4_HamberKit_Error"
+                }
+            ]
+        },
+        "submenus": [
+            {
+                "id": "hamberkit2files",
+                "label": "HamberKit Files"
+            }
+        ],
+        "breakpoints": [
+            {
+                "language": "hamber"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "hamber",
+                "path": "./snippets/hamber.json"
+            },
+            {
+                "language": "javascript",
+                "path": "./snippets/javascript.json"
+            },
+            {
+                "language": "typescript",
+                "path": "./snippets/typescript.json"
+            }
+        ]
+    },
+    "devDependencies": {
+        "@tsconfig/node12": "^1.0.0",
+        "@types/lodash": "^4.14.116",
+        "@types/node": "^13.9.0",
+        "@types/vscode": "*",
+        "js-yaml": "^3.14.0",
+        "typescript": "*",
+        "vscode-tmgrammar-test": "^0.0.11"
+    },
+    "dependencies": {
+        "hamber-language-server": "*",
+        "lodash": "^4.17.21",
+        "vscode-languageclient": "^7.0.0",
+        "typescript-hamber-plugin": "*"
+    }
+}

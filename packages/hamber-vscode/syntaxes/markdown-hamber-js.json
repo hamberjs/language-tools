@@ -1,0 +1,23 @@
+{
+    "scopeName": "markdown.hamber.codeblock.script",
+    "fileTypes": [],
+    "injectionSelector": "L:meta.script.hamber",
+    "patterns": [
+        {
+            "include": "#hamber-script-js"
+        }
+    ],
+    "repository": {
+        "hamber-script-js": {
+            "begin": "(?<=script.*>)(?!</)",
+            "end": "(?=</)",
+            "name": "meta.embedded.block.hamber.script",
+            "contentName": "source.ts",
+            "patterns": [
+                {
+                    "include": "source.ts"
+                }
+            ]
+        }
+    }
+}

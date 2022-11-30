@@ -1,0 +1,28 @@
+{
+    "name": "typescript-hamber-plugin",
+    "version": "0.3.10",
+    "description": "A TypeScript Plugin providing Hamber intellisense",
+    "main": "dist/src/index.js",
+    "scripts": {
+        "build": "tsc -p ./",
+        "watch": "tsc -w -p ./",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "hamber",
+        "typescript",
+        "javascript",
+        "plugin"
+    ],
+    "author": "NKDuy",
+    "license": "MIT",
+    "devDependencies": {
+        "@tsconfig/node12": "^1.0.0",
+        "@types/node": "^13.9.0",
+        "typescript": "*"
+    },
+    "dependencies": {
+        "hamber2tsx": "~0.5.20",
+        "sourcemap-codec": "^1.4.8"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "scopeName": "markdown.hamber.codeblock.style",
+    "fileTypes": [],
+    "injectionSelector": "L:meta.style.hamber",
+    "patterns": [
+        {
+            "include": "#hamber-script-css"
+        }
+    ],
+    "repository": {
+        "hamber-script-css": {
+            "begin": "(?<=style.*>)(?!</)",
+            "end": "(?=</)",
+            "name": "meta.embedded.block.hamber.style",
+            "contentName": "source.css",
+            "patterns": [
+                {
+                    "include": "source.css"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,14 @@
+packages/hamber2tsx/*.d.ts
+packages/hamber2tsx/repl/*
+packages/hamber2tsx/test/*/samples/**/*
+packages/hamber2tsx/test/sourcemaps/samples/*
+packages/hamber2tsx/test/emitDts/samples/*/expected/**
+packages/language-server/test/**/*.hamber
+packages/language-server/test/**/testfiles/**/*.ts
+packages/hamber-vscode/syntaxes/*.yaml
+packages/hamber-vscode/test/*/samples/**/*
+packages/typescript-plugin/src/**/*.js
+packages/typescript-plugin/src/**/*.d.ts
+**/dist
+.github/**
+.history/**
